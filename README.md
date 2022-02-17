@@ -23,7 +23,6 @@ Tic Tac Toe Reinforcement Learning
  Метода за доделу награде, награђује играче у односу на постигнути резултат.
 ```def dodelaNagrade(self):
         rezultat = self.sudija()
-        # Бекпропагација награде
         if rezultat == 1:
             self.p1.doprinosNagrade(1) # уколико је p1 победио дајемо му награду 1
             self.p2.doprinosNagrade(0) # уколико је p2 изгубио дајемо му награду 0
