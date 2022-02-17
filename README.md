@@ -44,3 +44,5 @@ Tic Tac Toe Reinforcement Learning
                 self.states_value[i] = 0 # уколико не посотји додељујемо нулу
             self.states_value[i] += self.stopaUcenja * (self.decay_gamma * nagrada - self.states_value[i]) # ажурирамо вредност стања помоћу додавања на тренутну вредност стања разлику производа награде и редукције награде и тренутне вредности помножене са стопом учења
             nagrada = self.states_value[i] #нова вредност награде
+
+## Реализовање игрице 'Икс-Окс' помоћу PyGame библиотеке
