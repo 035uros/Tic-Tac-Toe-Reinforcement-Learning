@@ -20,7 +20,7 @@ Tic Tac Toe Reinforcement Learning
   
  
  Метода за доделу награде, награђује играче у односу на постигнути резултат.
-def dodelaNagrade(self):
+`def dodelaNagrade(self):
         rezultat = self.sudija()
         # Бекпропагација награде
         if rezultat == 1:
@@ -31,7 +31,7 @@ def dodelaNagrade(self):
             self.p2.doprinosNagrade(1) # уколико је p2 победио дајемо му награду 1
         else:
             self.p1.doprinosNagrade(0.5) # уколико је нерешено делимо награду на пола међу играчима
-            self.p2.doprinosNagrade(0.5)
+            self.p2.doprinosNagrade(0.5)`
             
  Битне променљиве класе Играч: 
       stopaUcenja - стопа учења је параметар подешавања у алгоритму оптимизације који одређује                           величину корака при свакој итерацији док се креће ка минималној функцији                             губитка.
