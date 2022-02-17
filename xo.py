@@ -1,35 +1,17 @@
-import pygame, sys
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 15 18:38:33 2022
+
+@author: Anđela and Uroš
+"""
+
 import numpy as np
 import pickle as pkl
-import time
 
-# inicijalizovanje pygame
-pygame.init()
-
-# KONSTANTE
-SIRINA = 600
-VISINA = 600
-SIRINA_LINIJE = 7
-SQUARE_SIZE = 200
-POLUPRECNIK_O = 60
-DEBLJINA_O = 15
-DEBLJINA_X = 20
-SPACE = 55
 REDOVI = 3
 KOLONE = 3
-#boje
-CRNA = (77, 77, 77)
-ZUTA = (255, 185, 0)
-CRVENA = (255, 73, 91)
-ROZA = (224, 127, 174)
-LILA = (159, 125, 193)
-PLAVA = (152, 182, 255)
-ZELENA = (60, 179, 113)
-BOJA_LINIJA = (128, 158, 179)
-BOJAX = LILA
-BOJAO = ZELENA
-SIVA = BOJA_LINIJA
 
+# класа State омогућава креирање табле, праћење и проверу резултата и победника, дели награде и проглашава крај игре
 class State:
     def __init__(self, p1, p2):
         self.tabla = np.zeros((REDOVI, KOLONE)) #табла величине 3х3 је у старту попуњена нулама
@@ -47,43 +29,29 @@ class State:
         # проверавмо да ли постоји ред са три иста симбола
         for i in range(REDOVI):
             if sum(self.tabla[i, :]) == 3:
-                self.horizPobeda(i, 1)
                 self.Kraj = True
                 return 1
             if sum(self.tabla[i, :]) == -3:
-                self.horizPobeda(i, -1)
                 self.Kraj = True
                 return -1
         # проверавмо да ли постоји колона са три иста симбола
         for i in range(KOLONE):
             if sum(self.tabla[:, i]) == 3:
-                self.vertikalnaPobeda(i, 1)
                 self.Kraj = True
                 return 1
             if sum(self.tabla[:, i]) == -3:
-                self.vertikalnaPobeda(i, -1)
                 self.Kraj = True
                 return -1
         # проверавмо да ли постоји дијагонала са три иста симбола
         d_sum1 = sum([self.tabla[i, i] for i in range(KOLONE)]) #главна дијагонала
         d_sum2 = sum([self.tabla[i, KOLONE - i - 1] for i in range(KOLONE)]) #супротна дијагонала
-##        d_sum = max(abs(d_sum1), abs(d_sum2))
-        if d_sum1 == 3:
-            self.kosaLinijaDole(1)
+        d_sum = max(abs(d_sum1), abs(d_sum2))
+        if d_sum == 3:
             self.Kraj = True
-            return 1
-        elif d_sum1 == -3:
-            self.kosaLinijaDole(-1)
-            self.Kraj = True
-            return -1
-        elif d_sum2 == 3:
-            self.kosaLinijaGore(1)
-            self.Kraj = True
-            return 1
-        elif d_sum2 == -3:
-            self.kosaLinijaGore(-1)
-            self.Kraj = True
-            return -1
+            if d_sum1 == 3 or d_sum2 == 3:
+                return 1
+            else:
+                return -1
             
             # уколико је збир 3 победник је Х а уколико је збир -3 победник је О (Х = 1, О = -1)
             # враћамо број 1 уколико је Х победник односно -1 уколико је О победник
@@ -171,64 +139,7 @@ class State:
         print("Тренинг је готов!")
         self.p1.sacuvajPolitiku()
         self.p2.sacuvajPolitiku()
-
-
-    def prikaziTablu(self):
-        ekran = pygame.display.set_mode((SIRINA, VISINA))
-        ekran.fill(PLAVA)
-
-        #1. horizontalna
-        pygame.draw.line(ekran, BOJA_LINIJA, (20,200), (580,200), SIRINA_LINIJE)
-        #2. horizontalna
-        pygame.draw.line(ekran, BOJA_LINIJA, (20,400), (580,400), SIRINA_LINIJE)
-        #1. vertikalna
-        pygame.draw.line(ekran, BOJA_LINIJA, (200,20), (200,580), SIRINA_LINIJE)
-        #2. vertikalna
-        pygame.draw.line(ekran, BOJA_LINIJA, (400,20), (400,580), SIRINA_LINIJE)
-        print(self.tabla)
-        for row in range(REDOVI):
-            for col in range(KOLONE):
-                if self.tabla[row][col] == 1:
-                    pygame.draw.line(ekran, BOJAX, (col*200+40,row*200+160), (col*200+160, row*200+40), DEBLJINA_X)
-                    pygame.draw.line(ekran, BOJAX, (col*200+40,row*200+40), (col*200+160,row*200+160), DEBLJINA_X)
-                elif self.tabla[row][col] == -1:
-                    pygame.draw.circle(ekran, BOJAO, (int(col*200+100),int(row*200+100)), POLUPRECNIK_O, DEBLJINA_O)
-
-        pygame.display.update()
-
-    def vertikalnaPobeda(self, col, player):
-        posX = col*200 + 100
-
-        if player == 1:
-            color = BOJAX
-        elif player == -1:
-            color = BOJAO
-        pygame.draw.line(ekran, color, (posX, 15), (posX, VISINA - 15), 15)
-
-    def horizPobeda(self, row, player):
-        posY = row*200 + 100
-
-        if player == 1:
-            color = BOJAX
-        elif player == -1:
-            color = BOJAO
-        pygame.draw.line(ekran, color, (15, posY), (SIRINA - 15, posY), 15)
-
-    def kosaLinijaGore(self, player):
-        if player == 1:
-            color = BOJAX
-        elif player == -1:
-            color = BOJAO
-        pygame.draw.line(ekran, color, (15, VISINA - 15), (SIRINA - 15, 15), 15)
-
-    def kosaLinijaDole(self, player):
-        if player == 1:
-            color = BOJAX
-        elif player == -1:
-            color = BOJAO
-        pygame.draw.line(ekran, color, (15, 15), (SIRINA - 15, VISINA - 15), 15)
-    
-     
+                    
     # играње против реалног играча са позиције Х
     def igraX(self):
         while not self.Kraj:
@@ -296,10 +207,23 @@ class State:
                         print("Резултат је нерешен!") # проглашавање нерешеног резултата
                     self.reset()
                     break
+                
+    def prikaziTablu(self):
+        # p1 је играч Х док је p2 играч О
+        for i in range(0, REDOVI):
+            print('-------------')
+            out = '| '
+            for j in range(0, KOLONE):
+                if self.tabla[i, j] == 1:
+                    token = 'x'
+                if self.tabla[i, j] == -1:
+                    token = 'o'
+                if self.tabla[i, j] == 0:
+                    token = ' '
+                out += token + ' | '
+            print(out)
+        print('-------------')
         
-
-
-
 class Igrac:
     def __init__(self, ime, stopaIstrazivanja=0.3):
         self.ime = ime # назив играча
@@ -362,275 +286,43 @@ class Igrac:
         fr = open(datoteka, 'rb')
         self.states_value = pkl.load(fr) # додељивање политике атрибуту објекта
         fr.close()
-
+        
 class Covek:
     def __init__(self, ime):
         self.ime = ime
 
     def chooseAction(self, pozicije):
         while True:
-            for event in pygame.event.get():
-
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    X = event.pos[0]
-                    Y = event.pos[1]
-                    
-                    row = int(Y // 200)
-                    col = int(X // 200)
-
-                    action = (row, col)
-                    if action in pozicije:
-                        return action
-
-class Ekran:
-    def __init__(self, title, width = 600, height = 600, fill = PLAVA):
-        self.title = title
-        self.width = width
-        self.height = height
-        self.fill = fill
-        self.current = False
-
-    def makeCurrent(self):
-        pygame.display.set_caption(self.title)
-        self.current = True
-        self.screen = pygame.display.set_mode((self.width, self.height))
-
-    def endCurrent(self):
-        self.current = False
-
-    def checkUpdate(self):
-        return self.current
-
-    def screenUpdate(self):
-        if(self.current):
-            self.screen.fill(self.fill)
-
-    def returnTitle(self):
-        return self.screen
-        
-
-    def prviEkran(self):
-        font1 = pygame.font.Font('freesansbold.ttf', 50)
-        text = font1.render('CHOOSE YOUR LEVEL', True, CRNA)
-        textRect = text.get_rect()
-        textRect.center = (SIRINA // 2, 100)
-        self.screen.blit(text, textRect)
-
-    def drugiEkran(self):
-        font1 = pygame.font.Font('freesansbold.ttf', 50)
-        text = font1.render('CHOOSE YOUR PLAYER', True, CRNA)
-        textRect = text.get_rect()
-        textRect.center = (SIRINA // 2, 100)
-        self.screen.blit(text, textRect)
-        
-
-class Button:
-    def __init__(self, x, y, sx, sy, bcolor, fbcolor, font, fontsize, fcolor, text):
-        self.x = x
-        self.y = y
-        self.sx = sx
-        self.sy = sy
-        self.bcolor = bcolor
-        self.fbcolor = fbcolor
-        self.font = font
-        self.fontsize = fontsize
-        self.fcolor = fcolor
-        self.text = text
-        self.current = False
-        self.buttonf = pygame.font.SysFont(font, fontsize)
-
-    def showButton(self, display):
-        if(self.current):
-            pygame.draw.rect(display, self.fbcolor, (self.x, self.y, self.sx, self.sy))
-        else:
-            pygame.draw.rect(display, self.bcolor, (self.x, self.y, self.sx, self.sy))
-
-        textSurface = self.buttonf.render(self.text, False, self.fcolor)
-        display.blit(textSurface, ((self.x + (self.sx/2) - (self.fontsize/2)*(len(self.text)/2) - 5, (self.y + (self.sy/2) - (self.fontsize/2) - 4))))
-
-    def focusCheck(self, mousepos, mouseclick):
-        if(mousepos[0] >= self.x and mousepos[0] <= self.x + self.sx and mousepos[1] >= self.y and mousepos[1] <= self.y + self.sy):
-            self.current = True
-            return mouseclick[0]
-        else:
-            self.current = False
-            return False
-        
+            row = int(input("Унеси ред:"))
+            col = int(input("Унеси колону:"))
+            action = (row, col)
+            if action in pozicije:
+                return action
 if __name__ == "__main__":
+    
+    print("Опције: 1 - тренинг, 2 - Играч X, 3 - Играч O:")
+    opcija = input()
+    
+    if(opcija == '1'):
+        trening = input("Број партија за тренирање? оптимално од 1000 - 50000: ")
+        p1 = Igrac("p1")
+        p2 = Igrac("p2")
 
-    ekran = pygame.display.set_mode((SIRINA, VISINA))
-    ekran.fill(PLAVA)
-   # file = 'meow.wav'
-   # sound = pygame.mixer.Sound(file) #Load the wav
-   # sound.play() #Play it
-
-    menuEkran = Ekran('IKS OKS')
-    menuEkran1 = Ekran('IKS OKS')
-    menuEkran2 = Ekran('IKS OKS')
-    menuEkran3 = Ekran('IKS OKS')
-    treningEkran = Ekran('Treniranje')
-
-    trenutni = menuEkran.makeCurrent()
-
-    done = False
-
-    HardButton = Button(220, 220, 150, 50, ZELENA, CRVENA, 'arial', 30, CRNA, 'HARD')
-    MediumButton = Button(220, 280, 150, 50, ZELENA, ZUTA, 'arial', 30, CRNA, 'MEDIUM')
-    EasyButton = Button(220, 340, 150, 50, ZELENA, ROZA, 'arial', 30, CRNA, 'EASY')
-    TrainButton = Button(220, 400, 150, 50, ZELENA, LILA, 'arial', 30, CRNA, 'TRAIN')
-    IgracX = Button(100, 300, 150, 50, ZELENA, LILA, 'arial', 30, CRNA, 'PLAYER X')
-    IgracO = Button(350, 300, 150, 50, ZELENA, LILA, 'arial', 30, CRNA, 'PLAYER O')
-
-    while not done:
-        menuEkran.screenUpdate()
-        menuEkran1.screenUpdate()
-        menuEkran2.screenUpdate()
-        menuEkran3.screenUpdate()
-        treningEkran.screenUpdate()
-        mouse_pos = pygame.mouse.get_pos()
-        mouse_click = pygame.mouse.get_pressed()
-
-        if menuEkran.checkUpdate():
-            menuEkran.prviEkran()
-            Hard = HardButton.focusCheck(mouse_pos, mouse_click)
-            HardButton.showButton(menuEkran.returnTitle())
-            Medium = MediumButton.focusCheck(mouse_pos, mouse_click)
-            MediumButton.showButton(menuEkran.returnTitle())
-            Easy = EasyButton.focusCheck(mouse_pos, mouse_click)
-            EasyButton.showButton(menuEkran.returnTitle())
-            Train = TrainButton.focusCheck(mouse_pos, mouse_click)
-            TrainButton.showButton(menuEkran.returnTitle())
-            
-
-            if Hard:
-                trenutni = menuEkran1.makeCurrent()
-                menuEkran.endCurrent()
-            elif Medium:
-                trenutni = menuEkran2.makeCurrent()
-                menuEkran.endCurrent()
-            elif Easy:
-                trenutni = menuEkran3.makeCurrent()
-                menuEkran.endCurrent()
-            elif Train:
-                trenutni = treningEkran.makeCurrent()
-                menuEkran.endCurrent()
-
-                
-        elif menuEkran1.checkUpdate():
-            menuEkran1.drugiEkran()
-            button0 = IgracX.focusCheck(mouse_pos, mouse_click)
-            IgracX.showButton(menuEkran1.returnTitle())
-            button1 = IgracO.focusCheck(mouse_pos, mouse_click)
-            IgracO.showButton(menuEkran1.returnTitle())
-
-            if button0:
-                p1 = Covek("Човек")
-                p2 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p2.ucitajPolitiku("politika_p2_hard")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraO()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-            elif button1:
-                p1 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p1.ucitajPolitiku("politika_p1_hard")
-                p2 = Covek("Човек")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraX()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-                
-        elif menuEkran2.checkUpdate():
-            menuEkran2.drugiEkran()
-            button0 = IgracX.focusCheck(mouse_pos, mouse_click)
-            IgracX.showButton(menuEkran2.returnTitle())
-            button1 = IgracO.focusCheck(mouse_pos, mouse_click)
-            IgracO.showButton(menuEkran2.returnTitle())
-
-            if button0:
-                p1 = Covek("Човек")
-                p2 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p2.ucitajPolitiku("politika_p2_medium")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraO()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-            elif button1:
-                p1 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p1.ucitajPolitiku("politika_p1_medium")
-                p2 = Covek("Човек")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraX()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-
-        elif menuEkran3.checkUpdate():
-            menuEkran3.drugiEkran()
-            button0 = IgracX.focusCheck(mouse_pos, mouse_click)
-            IgracX.showButton(menuEkran3.returnTitle())
-            button1 = IgracO.focusCheck(mouse_pos, mouse_click)
-            IgracO.showButton(menuEkran3.returnTitle())
-
-            if button0:
-                p1 = Covek("Човек")
-                p2 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p2.ucitajPolitiku("politika_p2_easy")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraO()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-            elif button1:
-                p1 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p1.ucitajPolitiku("politika_p1_easy")
-                p2 = Covek("Човек")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraX()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-                
-        elif treningEkran.checkUpdate():
-            treningEkran.drugiEkran()
-            button0 = IgracX.focusCheck(mouse_pos, mouse_click)
-            IgracX.showButton(treningEkran.returnTitle())
-            button1 = IgracO.focusCheck(mouse_pos, mouse_click)
-            IgracO.showButton(treningEkran.returnTitle())
-
-            if button0:
-                p1 = Covek("Човек")
-                p2 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p2.ucitajPolitiku("politika_p2")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraO()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-            elif button1:
-                p1 = Igrac("Рачунар", stopaIstrazivanja=0)
-                p1.ucitajPolitiku("politika_p1")
-                p2 = Covek("Човек")
-                st = State(p1, p2)
-                st.prikaziTablu()
-                st.igraX()
-                pygame.display.update()
-                time.sleep(5)
-                done = True
-
-        for event in pygame.event.get():
-            if(event.type == pygame.QUIT):
-                done = True
-
-        pygame.display.update()
-    pygame.quit()
+        st = State(p1, p2)
+        print("Тренирамо...")
+        st.trening(int(trening))
+        
+    elif(opcija == '3'):
+        p1 = Igrac("Рачунар", stopaIstrazivanja=0)
+        p1.ucitajPolitiku("politika_p1")
+        
+        p2 = Covek("Човек")
+        st = State(p1, p2)
+        st.igraX()
+    else:
+        p1 = Covek("Човек")
+        
+        p2 = Igrac("Рачунар", stopaIstrazivanja=0)
+        p2.ucitajPolitiku("politika_p2")
+        st = State(p1, p2)
+        st.igraO()
