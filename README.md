@@ -50,7 +50,7 @@ Tic Tac Toe Reinforcement Learning
 Класа Ekran приказује одговарајуће екране за одговарајуће акције корисника. Први екран који се приказује је главни мени, док се други екран приказује тек након што корисник одабере једну од опција из главног менија.
 Класа Button служи за прављење тастера који мењају боју када пређемо курсором преко њих.
 
-Док играмо игру, једну од главних улога игра функција `prikaziTablu(self)` која исцртава таблу и облике X и O на местима која су попуњена, односно, која су већ одабрали рачунар или људски играч.
+Док играмо игру, једну од главних улога игра функција `prikaziTablu(self)` која исцртава таблу и облике X и O на местима која су попуњена, односно, која су већ одабрали рачунар или људски играч. Та функција се налази у класи State заједно са још неким функцијама задужним за исцртавање линија преко X или O облика уколико дође до победе.
 ```
 def prikaziTablu(self):
         ekran = pygame.display.set_mode((SIRINA, VISINA))
@@ -73,6 +73,22 @@ def prikaziTablu(self):
                 elif self.tabla[row][col] == -1:
                     pygame.draw.circle(ekran, BOJAO, (int(col*200+100),int(row*200+100)), POLUPRECNIK_O, DEBLJINA_O)
 
-        pygame.display.update()```
-        
-        
+        pygame.display.update()
+```
+Коначно, исцртавање облика на жељено место које бира људски играч се реализује преко класе Covek. Када људски играч кликне на одређено празно поље, то се региструје помоћу функције `chooseAction(self, pozicije)` тако што се ново стање уноси у матрицу стања табле, након чега се изглед табле ажурира да би се исцртао облик.
+```
+    def chooseAction(self, pozicije):
+        while True:
+            for event in pygame.event.get():
+
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    X = event.pos[0]
+                    Y = event.pos[1]
+                    
+                    row = int(Y // 200)
+                    col = int(X // 200)
+
+                    action = (row, col)
+                    if action in pozicije:
+                        return action
+```
