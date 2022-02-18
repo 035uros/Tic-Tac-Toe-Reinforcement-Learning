@@ -51,7 +51,8 @@ Tic Tac Toe Reinforcement Learning
 Класа Button служи за прављење тастера који мењају боју када пређемо курсором преко њих.
 
 Док играмо игру, једну од главних улога игра функција `prikaziTablu(self)` која исцртава таблу и облике X и O на местима која су попуњена, односно, која су већ одабрали рачунар или људски играч.
-```def prikaziTablu(self):
+```
+def prikaziTablu(self):
         ekran = pygame.display.set_mode((SIRINA, VISINA))
         ekran.fill(PLAVA)
 
