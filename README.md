@@ -45,4 +45,33 @@ Tic Tac Toe Reinforcement Learning
             self.states_value[i] += self.stopaUcenja * (self.decay_gamma * nagrada - self.states_value[i]) # ажурирамо вредност стања помоћу додавања на тренутну вредност стања разлику производа награде и редукције награде и тренутне вредности помножене са стопом учења
             nagrada = self.states_value[i] #нова вредност награде
 
-## Реализовање игрице 'Икс-Окс' помоћу библиотеке PyGame
+## Реализовање игрице 'Икс-Окс' помоћу библиотеке PyGame:
+
+Класа Ekran приказује одговарајуће екране за одговарајуће акције корисника. Први екран који се приказује је главни мени, док се други екран приказује тек након што корисник одабере једну од опција из главног менија.
+Класа Button служи за прављење тастера који мењају боју када пређемо курсором преко њих.
+
+Док играмо игру, једну од главних улога игра функција `prikaziTablu(self)` која исцртава таблу и облике X и O на местима која су попуњена, односно, која су већ одабрали рачунар или људски играч.
+```def prikaziTablu(self):
+        ekran = pygame.display.set_mode((SIRINA, VISINA))
+        ekran.fill(PLAVA)
+
+        #1. horizontalna
+        pygame.draw.line(ekran, BOJA_LINIJA, (20,200), (580,200), SIRINA_LINIJE)
+        #2. horizontalna
+        pygame.draw.line(ekran, BOJA_LINIJA, (20,400), (580,400), SIRINA_LINIJE)
+        #1. vertikalna
+        pygame.draw.line(ekran, BOJA_LINIJA, (200,20), (200,580), SIRINA_LINIJE)
+        #2. vertikalna
+        pygame.draw.line(ekran, BOJA_LINIJA, (400,20), (400,580), SIRINA_LINIJE)
+        print(self.tabla)
+        for row in range(REDOVI):
+            for col in range(KOLONE):
+                if self.tabla[row][col] == 1:
+                    pygame.draw.line(ekran, BOJAX, (col*200+40,row*200+160), (col*200+160, row*200+40), DEBLJINA_X)
+                    pygame.draw.line(ekran, BOJAX, (col*200+40,row*200+40), (col*200+160,row*200+160), DEBLJINA_X)
+                elif self.tabla[row][col] == -1:
+                    pygame.draw.circle(ekran, BOJAO, (int(col*200+100),int(row*200+100)), POLUPRECNIK_O, DEBLJINA_O)
+
+        pygame.display.update()```
+        
+        
